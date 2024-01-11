@@ -1,0 +1,12 @@
+{
+  "name": "my-project",
+  "module": "index.ts",
+  "devDependencies": {
+    "bun-types": "^1.0.1"
+  },
+  "type": "module",
+  "dependencies": {
+    "elysia": "^0.8.8",
+    "fedimint-ts": "^0.2.0"
+  }
+}
