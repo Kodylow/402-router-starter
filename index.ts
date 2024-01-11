@@ -1,11 +1,13 @@
 import { Elysia } from 'elysia'
 import { FedimintClient } from 'fedimint-ts'
+import { loadConfigFromEnv } from './config';
+
+const CONFIG = loadConfigFromEnv();
 
 const fedimintClient = new FedimintClient({
-    baseUrl: 'https://localhost:5000',
-    password: 'password',
+    baseUrl: CONFIG.baseUrl,
+    password: CONFIG.password,
 });
-
 
 const app = new Elysia()
     .get('/', () => 'Hello Elysia')
