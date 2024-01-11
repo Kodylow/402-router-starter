@@ -8,6 +8,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "elysia": "^0.8.8",
+    "elysia-http-status-code": "^1.0.9",
     "fedimint-ts": "^0.2.0"
   }
 }
