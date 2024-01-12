@@ -1,7 +1,7 @@
 import { FedimintClient } from "fedimint-ts";
 import { CashuMint, CashuWallet } from "@cashu/cashu-ts";
 import { LightningAddress } from "alby-tools";
-import { CONFIG } from "./config";
+import { Config } from "./config";
 
 interface Clients {
     fedimint: FedimintClient;
@@ -9,16 +9,17 @@ interface Clients {
     ln: LightningAddress;
 }
 
-const loadClients = async (): Promise<Clients> => {
+export const loadClients = async (config: Config): Promise<Clients> => {
     const fedimint = new FedimintClient({
-        baseUrl: CONFIG.baseUrl,
-        password: CONFIG.password,
+        baseUrl: config.baseUrl,
+        password: config.password,
     });
-    const cashu = new CashuWallet(new CashuMint(CONFIG.mintUrl));
-    const ln = new LightningAddress(CONFIG.lightningAddress);
+    console.log('Loaded fedimint client...');
+    const cashu = new CashuWallet(new CashuMint(config.mintUrl));
+    console.log('Loaded cashu client...');
+    const ln = new LightningAddress(config.lightningAddress);
     await ln.fetch();
-
-    console.log('Loaded clients');
+    console.log('Loaded ln client...');
 
     return {
         fedimint,
@@ -26,7 +27,3 @@ const loadClients = async (): Promise<Clients> => {
         ln,
     };
 }
-
-const CLIENTS = await loadClients();
-
-export default CLIENTS;

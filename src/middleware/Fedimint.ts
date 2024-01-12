@@ -1,5 +1,4 @@
-import CLIENTS from "../clients";
-import { CONFIG } from "../config";
+import { CLIENTS, CONFIG } from "..";
 
 export class Fedimint402 {
     inviteCode: string;

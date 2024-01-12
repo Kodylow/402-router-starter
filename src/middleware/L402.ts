@@ -1,8 +1,9 @@
 import { jwtVerify } from "jose";
 import { createJWT } from "../utils";
 import { Invoice } from "alby-tools";
-import { CONFIG } from "../config";
+
 import { Enum402 } from ".";
+import { CONFIG } from "..";
 
 export const middleware_l402 = (authorizationHeader: string): boolean => {
     // Try to decode the auth header

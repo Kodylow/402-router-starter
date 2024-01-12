@@ -15,7 +15,7 @@ export interface Config {
   lightningAddress: string;
 }
 
-function loadConfigFromEnv(): Config {
+export const loadConfigFromEnv = (): Config => {
   const {
     FEDERATION_INVITE_CODE,
     SECRET_KEY,
@@ -75,5 +75,3 @@ function loadConfigFromEnv(): Config {
     lightningAddress: LIGHTNING_ADDRESS,
   };
 }
-
-export const CONFIG = loadConfigFromEnv();

@@ -1,6 +1,6 @@
 import { Token, getDecodedToken } from "@cashu/cashu-ts";
-import { CONFIG } from "../config";
-import CLIENTS from "../clients";
+import { CLIENTS, CONFIG } from "..";
+
 
 export class Cashu402 {
     mintUrl: string;
