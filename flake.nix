@@ -12,7 +12,8 @@
       in {
         devShells = {
           default = pkgs.mkShell {
-            nativeBuildInputs = [ pkgs.bun pkgs.nodejs_20 pkgs.starship ];
+            nativeBuildInputs =
+              [ pkgs.bun pkgs.nodejs_20 pkgs.starship pkgs.just ];
             shellHook = ''
               bun install
               eval "$(starship init bash)"
