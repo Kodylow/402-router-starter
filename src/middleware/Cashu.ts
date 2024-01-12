@@ -2,7 +2,21 @@ import { Token, getDecodedToken } from "@cashu/cashu-ts";
 import { CONFIG } from "../config";
 import CLIENTS from "../clients";
 
-export const middleware_cashu = (encodedToken: string, exactRouteCost: number): boolean => {
+export class Cashu402 {
+    mintUrl: string;
+    amount: number;
+
+    constructor(amount: number) {
+        this.mintUrl = CONFIG.mintUrl;
+        this.amount = amount;
+    }
+
+    to_string(): string {
+        return `Cashu402 mintUrl='${this.mintUrl}', amount='${this.amount}'`;
+    }
+}
+
+export const middleware_cashu = async (encodedToken: string, exactRouteCost: number): Promise<boolean> => {
     // Decode to a cashu token
     try {
         const token = getDecodedToken(encodedToken);
@@ -17,7 +31,7 @@ export const middleware_cashu = (encodedToken: string, exactRouteCost: number): 
 
     // Try to reissue the token
     try {
-        CLIENTS.cashu.receive(encodedToken);
+        await CLIENTS.cashu.receive(encodedToken);
         return true;
     } catch (e) {
         console.error(e);

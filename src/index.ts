@@ -1,15 +1,17 @@
 import { Elysia } from 'elysia';
-import { Enum402, L402Authenticate } from './middleware/L402';
+import { L402Authenticate } from './middleware/L402';
 import { check402Middleware } from './middleware';
 import CLIENTS from './clients';
+import { Cashu402 } from './middleware/Cashu';
 
-const build402Headers = async (): Promise<Record<string, string>> => {
+const build402Headers = async (exactRouteCost: number): Promise<Record<string, string>> => {
     const invoice = await CLIENTS.ln.requestInvoice({satoshi: 5});
-    const l402Header = await L402Authenticate.create(Enum402.L402, invoice);
+    const l402Header = await L402Authenticate.create(invoice);
+    const xCashuHeader = new Cashu402(exactRouteCost);
     return {
         'WWW-Authenticate': l402Header.to_string(),
         'X-Fedimint': "Your Fedimint details here",
-        'X-Cashu': 'Your Cashu details here'
+        'X-Cashu': xCashuHeader.to_string(),
     };
 };
 
@@ -20,9 +22,10 @@ const startServer = async () => {
             beforeHandle: async ({ request, set }) => { // Make this an async function
                 const EXACT_ROUTE_COST = 1;
                 console.log("Checking 402");
-                if (!check402Middleware(request, EXACT_ROUTE_COST)) {
+                const isValid = await check402Middleware(request, EXACT_ROUTE_COST);
+                if (!isValid) {
                     console.log("402 not valid");
-                    set.headers = await build402Headers(); // Await the async function directly
+                    set.headers = await build402Headers(EXACT_ROUTE_COST); // Await the async function directly
                     set.status = 'Payment Required';
                     return set;
                 }

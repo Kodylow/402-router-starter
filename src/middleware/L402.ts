@@ -2,6 +2,7 @@ import { jwtVerify } from "jose";
 import { createJWT } from "../utils";
 import { Invoice } from "alby-tools";
 import { CONFIG } from "../config";
+import { Enum402 } from ".";
 
 export const middleware_l402 = (authorizationHeader: string): boolean => {
     // Try to decode the auth header
@@ -24,26 +25,20 @@ export class L402Authenticate {
     token: string;
     invoice: string;
 
-    private constructor(type: Enum402, invoice: Invoice, token: string) {
-        this.type = type;
+    private constructor(invoice: Invoice, token: string) {
+        this.type = Enum402.L402;
         this.invoice = invoice.paymentRequest;
         this.token = token;
     }
 
-    static async create(type: Enum402, invoice: Invoice): Promise<L402Authenticate> {
+    static async create(invoice: Invoice): Promise<L402Authenticate> {
         const token = await createJWT(invoice.paymentHash);
-        return new L402Authenticate(type, invoice, token);
+        return new L402Authenticate(invoice, token);
     }
 
     to_string(): string {
         return `L402 token='${this.token}', invoice='${this.invoice}'`;
     }
-}
-
-export enum Enum402 {
-    // FEDIMINT = 'fedimint',
-    // CASHU = 'cashu',
-    L402 = 'L402',
 }
 
 interface L402Authorization {
