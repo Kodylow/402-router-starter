@@ -1,0 +1,2 @@
+network=signet
+disable-plugin=bcli
