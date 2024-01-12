@@ -1,19 +1,12 @@
 import { CLIENTS, CONFIG } from "..";
 
-export class Fedimint402 {
-    inviteCode: string;
-    amount: number;
-
-    constructor(amount: number) {
-        this.inviteCode = CONFIG.federationInviteCode;
-        this.amount = amount;
-    }
-
-    to_string(): string {
-        return `Fedimint402 inviteCode='${this.inviteCode}', amount='${this.amount}'`;
-    }
-}
-
+/**
+ * Spec is under development, just copied X-Cashu for now
+ * 
+ * @param xFedimintHeader
+ * @param exactRouteCost 
+ * @returns 
+ */
 export const middleware_fedimint = async (xFedimintHeader: string, exactRouteCost: number): Promise<boolean> => {
     try {
         // TODO: should have a way to validate the fedimint oob notes in the typescript library
@@ -30,5 +23,19 @@ export const middleware_fedimint = async (xFedimintHeader: string, exactRouteCos
     } catch (e) {
         console.error(e);
         return false;
+    }
+}
+
+export class Fedimint402 {
+    inviteCode: string;
+    amount: number;
+
+    constructor(amount: number) {
+        this.inviteCode = CONFIG.federationInviteCode;
+        this.amount = amount;
+    }
+
+    to_string(): string {
+        return `Fedimint402 inviteCode='${this.inviteCode}', amount='${this.amount}'`;
     }
 }

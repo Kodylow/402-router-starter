@@ -4,11 +4,10 @@ import { middleware_fedimint } from "./Fedimint";
 import { middleware_l402 } from "./L402";
 
 export enum Enum402 {
-    // FEDIMINT = 'fedimint',
-    // CASHU = 'cashu',
+    FEDIMINT = 'Fedimint402',
+    CASHU = 'Cashu402',
     L402 = 'L402',
 }
-
 
 export const check402Middleware = async (req: Request, exactRouteCost: number): Promise<boolean> => {
     const fedimintHeader = req.headers.get('X-Fedimint');
@@ -16,11 +15,14 @@ export const check402Middleware = async (req: Request, exactRouteCost: number): 
     const authorizationHeader = req.headers.get('Authorization');
 
     if (fedimintHeader) {
+        console.log("check402Middleware - fedimintHeader: ", fedimintHeader)
         return await middleware_fedimint(fedimintHeader, exactRouteCost);
     } else if (cashuHeader) {
+        console.log("check402Middleware - cashuHeader: ", cashuHeader)
         return await middleware_cashu(cashuHeader, exactRouteCost);
     } else if (authorizationHeader) {
-        return middleware_l402(authorizationHeader);
+        console.log("check402Middleware - authorizationHeader: ", authorizationHeader)
+        return await middleware_l402(authorizationHeader);
     }
 
     return false;
