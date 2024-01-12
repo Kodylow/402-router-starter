@@ -39,7 +39,7 @@ async function main() {
         password: CONFIG.password,
     });
 
-    const wallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
+    const cashuWallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
 
     const app = new Elysia()
         .use(HttpStatusCode())
