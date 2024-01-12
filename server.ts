@@ -12,6 +12,9 @@ const build402Headers = (): Record<string, string> => {
 };
 
 const check402Middleware = (req: Request): boolean => {
+
+    const EXACTAMOUNT = 3;
+
     const fedimintHeader = req.headers.get('X-Fedimint');
     const cashuHeader = req.headers.get('X-Cashu');
     const authorizationHeader = req.headers.get('Authorization');
@@ -19,7 +22,7 @@ const check402Middleware = (req: Request): boolean => {
     if (fedimintHeader) {
         return middleware_fedimint(fedimintHeader);
     } else if (cashuHeader) {
-        return middleware_cashu(cashuHeader);
+        return middleware_cashu(cashuHeader, EXACTAMOUNT);
     } else if (authorizationHeader) {
         return middleware_l402(authorizationHeader);
     }
