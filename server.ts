@@ -1,8 +1,9 @@
 import { Elysia } from "elysia";
-import { FedimintClient } from "fedimint-ts";
+//import { FedimintClient } from "fedimint-ts";
 import { loadConfigFromEnv } from "./config";
 import { HttpStatusCode } from "elysia-http-status-code";
-import { CashuMint, CashuWallet } from "@cashu/cashu-ts";
+//import { CashuMint, CashuWallet } from "@cashu/cashu-ts";
+import { middleware_fedimint, middleware_cashu, middleware_l402 } from "./middleware";
 
 const build402Headers = (): Record<string, string> => {
   return {
@@ -12,22 +13,35 @@ const build402Headers = (): Record<string, string> => {
   };
 };
 
-const check402Middleware = (req: Request): boolean => {
-  const EXACTAMOUNT = 3;
+const check402Middleware = async (req: Request, mintUrl: string) => {
+  const EXACTAMOUNT = 10;
 
   const fedimintHeader = req.headers.get("X-Fedimint");
   const cashuHeader = req.headers.get("X-Cashu");
   const authorizationHeader = req.headers.get("Authorization");
+  let isSuccess = false;
 
   if (fedimintHeader) {
-    return middleware_fedimint(fedimintHeader);
+    isSuccess = middleware_fedimint(fedimintHeader);
   } else if (cashuHeader) {
-    return middleware_cashu(cashuHeader, EXACTAMOUNT);
+    isSuccess = await middleware_cashu(cashuHeader, EXACTAMOUNT);
   } else if (authorizationHeader) {
-    return middleware_l402(authorizationHeader);
+    isSuccess = middleware_l402(authorizationHeader);
+  }
+  if (!isSuccess) {
+    return {
+      isError: true,
+      data: {
+        mintUrl,
+        amount: EXACTAMOUNT,
+      },
+    };
   }
 
-  return false;
+  return {
+    isError: false,
+    data: null,
+  };
 };
 
 async function main() {
@@ -38,7 +52,7 @@ async function main() {
   //     password: CONFIG.password,
   // });
 
-  const cashuWallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
+  //  const cashuWallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
 
   const app = new Elysia()
     .use(HttpStatusCode())
@@ -46,17 +60,20 @@ async function main() {
     // Returns a 402 if the user is not authenticated or doesn't include a Fedimint or Cashu ecash header
     .guard(
       {
-        beforeHandle({ request, set, httpStatus }) {
-          if (!check402Middleware(request)) {
+        async beforeHandle({ request, set, httpStatus }) {
+          const { isError, data } = await check402Middleware(request, CONFIG.mintUrl);
+
+          if (isError) {
             set.headers = build402Headers();
             set.status = httpStatus.HTTP_402_PAYMENT_REQUIRED;
             return {
               error: true,
               code: httpStatus.HTTP_402_PAYMENT_REQUIRED,
               message: "Payment Required",
-              data: "Payment required to access this resource, see headers for supported payment methods.",
+              data,
             };
           }
+          // If no error, continue to paid route
         },
       },
       (app) => app.get("/test", () => "Paid route"),
