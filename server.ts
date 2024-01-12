@@ -2,6 +2,7 @@ import { Elysia } from 'elysia'
 import { FedimintClient } from 'fedimint-ts'
 import { loadConfigFromEnv } from './config';
 import { HttpStatusCode } from 'elysia-http-status-code';
+import { CashuMint, CashuWallet } from '@cashu/cashu-ts';
 
 const build402Headers = (): Record<string, string> => {
     return {
@@ -37,6 +38,8 @@ async function main() {
         baseUrl: CONFIG.baseUrl,
         password: CONFIG.password,
     });
+
+    const wallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
 
     const app = new Elysia()
         .use(HttpStatusCode())
