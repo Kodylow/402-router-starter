@@ -1,5 +1,5 @@
 import { SignJWT } from "jose";
-import { CONFIG } from "./server";
+import { CONFIG } from "./config";
 
 export const createJWT = async (paymentHash: string) => {
     const jwt = await new SignJWT({ paymentHash: paymentHash })

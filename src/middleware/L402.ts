@@ -1,8 +1,7 @@
 import { jwtVerify } from "jose";
-import { createHash } from 'crypto';
 import { createJWT } from "../utils";
 import { Invoice } from "alby-tools";
-import CONFIG from "../config";
+import { CONFIG } from "../config";
 
 export const middleware_l402 = (authorizationHeader: string): boolean => {
     // Try to decode the auth header
@@ -20,24 +19,20 @@ export const middleware_l402 = (authorizationHeader: string): boolean => {
     }
 }
 
-// Helper function to calculate SHA256 hash
-function sha256(data: string | Buffer): string {
-    return createHash('sha256').update(data).digest('hex');
-}
-
 export class L402Authenticate {
     type: Enum402;
     token: string;
     invoice: string;
 
-    constructor(type: Enum402, invoice: Invoice) {
+    private constructor(type: Enum402, invoice: Invoice, token: string) {
         this.type = type;
         this.invoice = invoice.paymentRequest;
-        this.token = '';
-        const init = async () => {
-            this.token = await createJWT(invoice.paymentHash);
-        }
-        init();
+        this.token = token;
+    }
+
+    static async create(type: Enum402, invoice: Invoice): Promise<L402Authenticate> {
+        const token = await createJWT(invoice.paymentHash);
+        return new L402Authenticate(type, invoice, token);
     }
 
     to_string(): string {
@@ -79,7 +74,8 @@ const verifyL402Authorization = async (l402: L402Authorization): Promise<boolean
     try {
         let { payload } = await jwtVerify(l402.token, new TextEncoder().encode(CONFIG.jwtSecret));
         
-        let hash = sha256(l402.preimage);
+        const hasher = new Bun.CryptoHasher('sha256');
+        const hash = hasher.update(l402.preimage).digest('hex');
         if (payload && payload['paymentHash'] && hash === payload['paymentHash']) {
             return true;
         }

@@ -1,5 +1,5 @@
 import { Token, getDecodedToken } from "@cashu/cashu-ts";
-import CONFIG from "../config";
+import { CONFIG } from "../config";
 import CLIENTS from "../clients";
 
 export const middleware_cashu = (encodedToken: string, exactRouteCost: number): boolean => {
