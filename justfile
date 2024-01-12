@@ -1,5 +1,11 @@
 run:
     bun run server.ts
 
-lightning:
-    lightningd --lightning-dir=./.lightning
+cln-start:
+    lightningd --lightning-dir=.lightning --log-file=lightningd.log --daemon
+
+alias:
+    alias lc="lightning-cli --lightning-dir=.lightning"
+
+cln-stop:
+    lightning-cli --lightning-dir=.lightning stop

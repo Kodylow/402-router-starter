@@ -1,3 +1,6 @@
 node_modules
 .env
 .lightning/plugins
+.lightning/bitcoin
+.lightning/signet
+.lightning/regtest
