@@ -1,5 +1,19 @@
 import CLIENTS from "../clients";
+import { CONFIG } from "../config";
 
+export class Fedimint402 {
+    inviteCode: string;
+    amount: number;
+
+    constructor(amount: number) {
+        this.inviteCode = CONFIG.federationInviteCode;
+        this.amount = amount;
+    }
+
+    to_string(): string {
+        return `Fedimint402 inviteCode='${this.inviteCode}', amount='${this.amount}'`;
+    }
+}
 
 export const middleware_fedimint = async (xFedimintHeader: string, exactRouteCost: number): Promise<boolean> => {
     try {
