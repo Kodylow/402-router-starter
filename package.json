@@ -1,15 +1,21 @@
 {
   "name": "my-project",
   "module": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts"
+  },
   "devDependencies": {
     "bun-types": "^1.0.1"
   },
   "type": "module",
   "dependencies": {
     "@cashu/cashu-ts": "^0.8.2-rc.7",
+    "alby-tools": "^3.2.1",
+    "bolt11": "^1.4.1",
     "dotenv": "^16.3.1",
     "elysia": "^0.8.8",
     "elysia-http-status-code": "^1.0.9",
-    "fedimint-ts": "^0.2.0"
+    "fedimint-ts": "^0.2.0",
+    "jose": "^5.2.0"
   }
 }

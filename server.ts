@@ -1,55 +1,32 @@
-import { Elysia } from 'elysia'
-import { FedimintClient } from 'fedimint-ts'
-import { loadConfigFromEnv } from './config';
+import { Elysia } from 'elysia';
 import { HttpStatusCode } from 'elysia-http-status-code';
-import { CashuMint, CashuWallet } from '@cashu/cashu-ts';
+import { Enum402, L402Authenticate } from './middleware/L402';
+import { check402Middleware } from './middleware';
+import CLIENTS from './clients';
 
-const build402Headers = (): Record<string, string> => {
+const build402Headers = async (): Promise<Record<string, string>> => {
+    const invoice = await CLIENTS.ln.requestInvoice({satoshi: 5});
+    const l402Header = new L402Authenticate(Enum402.L402, invoice);
     return {
-        'WWW-Authenticate': 'Bearer realm="Access to the requested resource", charset="UTF-8"',
-        'X-Fedimint': 'Your Fedimint details here',
+        'WWW-Authenticate': l402Header.to_string(),
+        'X-Fedimint': "Your Fedimint details here",
         'X-Cashu': 'Your Cashu details here'
     };
 };
 
-const check402Middleware = (req: Request): boolean => {
-
-    const EXACTAMOUNT = 3;
-
-    const fedimintHeader = req.headers.get('X-Fedimint');
-    const cashuHeader = req.headers.get('X-Cashu');
-    const authorizationHeader = req.headers.get('Authorization');
-
-    if (fedimintHeader) {
-        return middleware_fedimint(fedimintHeader);
-    } else if (cashuHeader) {
-        return middleware_cashu(cashuHeader, EXACTAMOUNT);
-    } else if (authorizationHeader) {
-        return middleware_l402(authorizationHeader);
-    }
-
-    return false;
-}
-
-async function main() {
-    const CONFIG = loadConfigFromEnv();
-
-    const fedimintClient = new FedimintClient({
-        baseUrl: CONFIG.baseUrl,
-        password: CONFIG.password,
-    });
-
-    const cashuWallet = new CashuWallet(new CashuMint(CONFIG.mintUrl));
-
+const startServer = async () => {
     const app = new Elysia()
         .use(HttpStatusCode())
-        // Everything in this block is a paid route
+        // Everything in this block is a paid route for 1 satoshi of ecashper call or a 1 satoshi L402 valid for 1 minute
         // Returns a 402 if the user is not authenticated or doesn't include a Fedimint or Cashu ecash header
         .guard(
         {
             beforeHandle({ request, set, httpStatus }) {
-                if (!check402Middleware(request)) {
-                    set.headers = build402Headers();
+                const EXACT_ROUTE_COST = 1;
+                if (!check402Middleware(request, EXACT_ROUTE_COST)) {
+                    async () => {
+                        set.headers = await build402Headers();
+                    }
                     set.status = httpStatus.HTTP_402_PAYMENT_REQUIRED;
                     return {
                         error: true,
@@ -70,4 +47,4 @@ async function main() {
     console.log(`🦊 Elysia is running at on port ${app.server?.port}...`)
 }
 
-main();
+export default startServer;

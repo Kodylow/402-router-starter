@@ -1,4 +1,1 @@
-{ pkgs }: {
-  deps = [
-  ];
-}
+{ pkgs }: { deps = [ pkgs.clightning pkgs.just ]; }

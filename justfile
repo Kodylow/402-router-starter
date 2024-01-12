@@ -9,3 +9,6 @@ alias:
 
 cln-stop:
     lightning-cli --lightning-dir=.lightning stop
+
+just fm-start:
+    cd 
