@@ -5,10 +5,12 @@ import { build402Headers } from "./utils";
 
 export const startServer = async (config: Config) => {
   const app = new Elysia()
+    // All routes inside this guard are paid routes with a cost of 1 sat
+    // For ecash it's 1 sat per api call
+    // For L402 it's 1 sat for a jwt that lasts 10 minutes
     .guard(
       {
         beforeHandle: async ({ request, set }) => {
-          // Make this an async function
           const EXACT_ROUTE_COST = 1;
           console.log("Checking 402");
           const isValid = await check402Middleware(request, EXACT_ROUTE_COST);
