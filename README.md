@@ -6,23 +6,21 @@ This project showcases different Bitcoin-based payment methods for accessing API
 
 Ecash payments are handled through chaumian mint systems like Cashu and Fedimint, which provide privacy and scalability. They are ideal for paying for individual API calls, because you just include the ecash in the header which is validated and redeemed by the server prior to processing the request.
 
-### Cashu (`Cashu.ts`)
+### Cashu (`/src/middleware/Cashu.ts`)
 
-- **Description**: Implements a single round push payment system using encoded tokens.
-- **Operation**: Clients send an encoded token in the request header, which the server must validate and redeem.
+- Implements a single round push payment system using encoded tokens.
+- Clients send a cashu token for an exact amount in the request' "X-Cashu" header, which the server must validate and redeem.
 - **Validation**: Token proofs must match the configured mint URL, and the token amount must be equal to the exact route cost.
 
-### Fedimint (`Fedimint.ts`)
+### Fedimint (`/src/middleware/Fedimint.ts`)
 
-- **Description**: A federated e-cash system under development, allowing for private payments.
-- **Operation**: Clients include federated out-of-band (oob) notes in the header, which are validated and reissued by the server.
-- **Validation**: The amount in the notes must be equal to the exact route cost.
+- TO DEFINE
 
 ## Lightning
 
 Lightning payments use the L402 protocol, which is ideal for sessions or API keys that have a validity period.
 
-### L402 (`L402.ts`)
+### L402 (`/src/middleware/L402.ts`)
 
 - **Description**: A protocol for paying for a session or API key valid for a certain time frame.
 - **Operation**: The server returns a `WWW-Authenticate` header with a token and an invoice. The client pays the invoice, receives a preimage, and sends it back with the token in the `Authorization` header.
@@ -49,5 +47,5 @@ Which will throw you into the nix shell with all the dependencies you need to ru
 ## Running
 
 ```bash
-just run
+bun run dev
 ```
